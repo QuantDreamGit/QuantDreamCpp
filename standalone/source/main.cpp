@@ -1,53 +1,25 @@
-#include <greeter/greeter.h>
-#include <greeter/version.h>
-
-#include <cxxopts.hpp>
+// amir.khorrami@carloalberto.org
 #include <iostream>
-#include <string>
-#include <unordered_map>
+#include <__ostream/basic_ostream.h>
+#include <autodiff/forward/dual/dual.hpp>
 
-auto main(int argc, char** argv) -> int {
-  const std::unordered_map<std::string, greeter::LanguageCode> languages{
-      {"en", greeter::LanguageCode::EN},
-      {"de", greeter::LanguageCode::DE},
-      {"es", greeter::LanguageCode::ES},
-      {"fr", greeter::LanguageCode::FR},
-  };
+#include "autodiff/forward/utils/derivative.hpp"
+#include "mafirm/math/basic.h"
 
-  cxxopts::Options options(*argv, "A program to welcome the world!");
+using namespace autodiff;
 
-  std::string language;
-  std::string name;
+dual f(dual x) { return x * x + 3; }
 
-  // clang-format off
-  options.add_options()
-    ("h,help", "Show help")
-    ("v,version", "Print the current version number")
-    ("n,name", "Name to greet", cxxopts::value(name)->default_value("World"))
-    ("l,lang", "Language code to use", cxxopts::value(language)->default_value("en"))
-  ;
-  // clang-format on
+int main () {
+  // Function to differentiate
+  // std::function<double(double)> f = [](double x) { return x * x; };
+  // double result = mafirm::math::derivative::derivative(f, 5);
+  dual x = 1.0;
+  dual1st y = 1.0;
 
-  auto result = options.parse(argc, argv);
 
-  if (result["help"].as<bool>()) {
-    std::cout << options.help() << std::endl;
-    return 0;
-  }
+  auto [u, ux] = derivatives(f, wrt(y), at(x));
 
-  if (result["version"].as<bool>()) {
-    std::cout << "Greeter, version " << GREETER_VERSION << std::endl;
-    return 0;
-  }
-
-  auto langIt = languages.find(language);
-  if (langIt == languages.end()) {
-    std::cerr << "unknown language code: " << language << std::endl;
-    return 1;
-  }
-
-  greeter::Greeter greeter(name);
-  std::cout << greeter.greet(langIt->second) << std::endl;
-
-  return 0;
+  std::cout << u << " " << ux << std::endl;
+  return 1;
 }

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.14...3.22)
 
 # Note: update this to your new project's name and version
 project(
-  Greeter
+  MaFIRM
   VERSION 1.0
   LANGUAGES CXX
 )
@@ -76,3 +76,26 @@ packageProject(
   COMPATIBILITY SameMajorVersion
   DEPENDENCIES "fmt 10.2.1"
 )
+
+# ---- Create standalone executable for testing ----
+add_executable(MaFIRM_test standalone/source/main.cpp)
+# Link with your library
+target_link_libraries(MaFIRM_test PRIVATE MaFIRM)
+
+
+# ---- Add Libraries to CMake package registry ----
+
+# ---- Add autodiff ----
+# Disable autodiff tests before fetching
+set(AUTODIFF_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+set(AUTODIFF_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+set(AUTODIFF_BUILD_CUDA OFF CACHE BOOL " " FORCE)
+
+CPMAddPackage(
+        NAME autodiff
+        GITHUB_REPOSITORY autodiff/autodiff
+        GIT_TAG v1.1.2   # or latest release
+)
+
+# Link it to your target
+target_link_libraries(${PROJECT_NAME} PUBLIC autodiff)
