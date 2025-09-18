@@ -87,15 +87,18 @@ target_link_libraries(MaFIRM_test PRIVATE MaFIRM)
 
 # ---- Add autodiff ----
 # Disable autodiff tests before fetching
-set(AUTODIFF_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-set(AUTODIFF_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
-set(AUTODIFF_BUILD_CUDA OFF CACHE BOOL " " FORCE)
+# set(AUTODIFF_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+# set(AUTODIFF_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+# set(AUTODIFF_BUILD_CUDA OFF CACHE BOOL " " FORCE)
 
-CPMAddPackage(
-        NAME autodiff
-        GITHUB_REPOSITORY autodiff/autodiff
-        GIT_TAG v1.1.2   # or latest release
-)
+#
+#CPMAddPackage(
+#        NAME autodiff
+#        GITHUB_REPOSITORY autodiff/autodiff
+#        GIT_TAG v1.1.2   # or latest release
+#)
 
 # Link it to your target
-target_link_libraries(${PROJECT_NAME} PUBLIC autodiff)
+#target_link_libraries(${PROJECT_NAME} PUBLIC autodiff)
+target_link_libraries(MaFIRM_test PRIVATE CURL::libcurl)
+find_package(CURL REQUIRED)
