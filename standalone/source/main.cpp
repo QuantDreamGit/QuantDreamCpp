@@ -4,9 +4,14 @@
 #include <memory>
 #include <string>
 
+#include "alpha_vantage/Parser.h"
+
 int main() {
     const std::string API = "WFE9OEXRRTBBUP7P";
-    const std::string SYMBOL = "IBM";
+    // List of Symbols
+    const std::vector<std::string> SYMBOLS = {"IBM", "AAPL", "MSFT"};
+    // Initialize TimeSeries object
+    TimeSeries ts;
 
     // Create an instance of the CurlHttpClient
     auto httpClient = std::make_shared<CurlHttpClient>();
@@ -14,14 +19,27 @@ int main() {
     // Alpha Vantage Client initialization
     AlphaVantage::Client client(API, httpClient);
 
-    // Fetch daily time series data for a specific stock symbol
-
     try {
-        std::string data = client.fetchDailyTimeSeries(SYMBOL);
-        std::cout << "Data for " << SYMBOL << ":\n" << data << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "Error fetching data: " << e.what() << std::endl;
-    }
+        for (const std::string& symbol : SYMBOLS) {
+            std::string rawJson = client.fetchDailyTimeSeries(symbol);
+            AlphaVantage::Parser::parseJsonResponse(rawJson, symbol, ts);
+        }
 
-    return 0;
+        for (const auto& dp : ts.getDataPoints("IBM")) {
+            auto* ohlc = dynamic_cast<OHLCVDataPoint*>(dp.get());
+            if (ohlc) {
+                std::cout << ohlc->getTimestamp()
+                          << " O:" << ohlc->getOpen()
+                          << " H:" << ohlc->getHigh()
+                          << " L:" << ohlc->getLow()
+                          << " C:" << ohlc->getClose()
+                          << " V:" << ohlc->getVolume()
+                          << "\n";
+            }
+        }
+
+    } catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
 }
