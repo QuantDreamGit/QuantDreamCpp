@@ -1,68 +1,26 @@
 #include <iostream>
+#include "alpha_vantage/AlphaVantage.h"
+#include "alpha_vantage/CurlHttpClient.h"
+#include <memory>
 #include <string>
-#include <curl/curl.h>
-#include "external/rapidjson/document.h"
-#include "external/rapidjson/error/en.h"
-
-using namespace rapidjson;
-
-// Callback for libcurl
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
-}
 
 int main() {
-    std::string apiKey = "WFE9OEXRRTBBUP7P";
-    std::string symbol = "IBM";
-    std::string url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol="
-                      + symbol + "&apikey=" + apiKey;
+    const std::string API = "WFE9OEXRRTBBUP7P";
+    const std::string SYMBOL = "IBM";
 
-    CURL* curl;
-    CURLcode res;
-    std::string readBuffer;
+    // Create an instance of the CurlHttpClient
+    auto httpClient = std::make_shared<CurlHttpClient>();
 
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-    curl = curl_easy_init();
-    if(curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    // Alpha Vantage Client initialization
+    AlphaVantage::Client client(API, httpClient);
 
-        res = curl_easy_perform(curl);
-        if(res != CURLE_OK) {
-            std::cerr << "curl_easy_perform() failed: "
-                      << curl_easy_strerror(res) << std::endl;
-        }
-        curl_easy_cleanup(curl);
-    }
-    curl_global_cleanup();
+    // Fetch daily time series data for a specific stock symbol
 
-    // Parse JSON with RapidJSON
-    Document doc;
-    ParseResult parseResult = doc.Parse(readBuffer.c_str());
-    if (!parseResult) {
-        std::cerr << "JSON parse error: "
-                  << GetParseError_En(parseResult.Code())
-                  << " (offset " << parseResult.Offset() << ")"
-                  << std::endl;
-        return 1;
-    }
-
-    if (doc.HasMember("Time Series (Daily)")) {
-        const Value& timeSeries = doc["Time Series (Daily)"];
-
-        // Get first (latest) entry
-        if (timeSeries.MemberBegin() != timeSeries.MemberEnd()) {
-            auto itr = timeSeries.MemberBegin();
-            std::string latestDate = itr->name.GetString();
-            std::string closePrice = itr->value["4. close"].GetString();
-
-            std::cout << "Latest date: " << latestDate << std::endl;
-            std::cout << "Close price: " << closePrice << std::endl;
-        }
-    } else {
-        std::cerr << "Time Series (Daily) not found in response." << std::endl;
+    try {
+        std::string data = client.fetchDailyTimeSeries(SYMBOL);
+        std::cout << "Data for " << SYMBOL << ":\n" << data << std::endl;
+    } catch (const std::exception &e) {
+        std::cerr << "Error fetching data: " << e.what() << std::endl;
     }
 
     return 0;
