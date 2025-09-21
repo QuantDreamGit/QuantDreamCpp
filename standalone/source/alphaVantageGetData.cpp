@@ -7,9 +7,11 @@
 #include "alpha_vantage/Parser.h"
 
 int main() {
-    const std::string API = "WFE9OEXRRTBBUP7P";
+    const std::string API = "Z66IST5JZ5NNWHJ2";// "WFE9OEXRRTBBUP7P";
     // List of Symbols
-    const std::vector<std::string> SYMBOLS = {"IBM", "AAPL", "MSFT"};
+    const std::vector<std::string> SYMBOLS = {
+        "IBM"
+    };
     // Initialize TimeSeries object
     TimeSeries ts;
 
@@ -22,6 +24,10 @@ int main() {
     try {
         for (const std::string& symbol : SYMBOLS) {
             std::string rawJson = client.fetchDailyTimeSeries(symbol);
+            if (rawJson.empty()) {
+                std::cerr << "Failed to fetch data for symbol: " << symbol << std::endl;
+                continue;
+            }
             AlphaVantage::Parser::parseJsonResponse(rawJson, symbol, ts);
         }
 

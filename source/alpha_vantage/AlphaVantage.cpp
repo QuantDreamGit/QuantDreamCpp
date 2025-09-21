@@ -4,13 +4,9 @@
 
 #include "alpha_vantage/AlphaVantage.h"
 #include "alpha_vantage/TimeSeries.h"
-#include "alpha_vantage/DataPoint.h"
 
-#include <curl/curl.h>
 #include <stdexcept>
 #include <string>
-#include "external/rapidjson/document.h"
-#include "external/rapidjson/error/en.h"
 
 using namespace AlphaVantage;
 
