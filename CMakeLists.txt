@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14...3.22)
 
 # ---- Project ----
 project(
-        MaFIRM
+        QuantDreamCpp
         VERSION 1.0
         LANGUAGES CXX
 )
@@ -64,4 +64,9 @@ find_package(CURL REQUIRED)
 
 # ---- AlphaVantage standalone executable ----
 add_executable(AlphaVantageGetData standalone/source/alphaVantageGetData.cpp)
-target_link_libraries(AlphaVantageGetData PRIVATE MaFIRM CURL::libcurl)
+target_link_libraries(AlphaVantageGetData PRIVATE QuantDreamCpp CURL::libcurl)
+
+# ---- AlphaVantage standalone executable ----
+add_executable(loadYFCSV standalone/source/loadYFCSV.cpp)
+target_link_libraries(loadYFCSV PRIVATE QuantDreamCpp CURL::libcurl)
+
