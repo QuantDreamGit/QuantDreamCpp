@@ -5,6 +5,7 @@
 #ifndef ALPHAVANTAGE_H
 #define ALPHAVANTAGE_H
 #include <string>
+#include <memory>
 #include "IHttpClient.h"
 #include "TimeSeries.h"
 

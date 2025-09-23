@@ -8,6 +8,7 @@
 #include "DataPoint.h"
 #include <map>
 #include <vector>
+#include <memory>
 
 class TimeSeries {
     // Symbol --> DataPoints
