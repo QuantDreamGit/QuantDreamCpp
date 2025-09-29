@@ -155,10 +155,7 @@ std::vector<Eigen::MatrixXd> MonteCarloEngine::runSimulation(const RiskMeasure m
     simulatedDataReturns_.push_back(runSingleSimulation());
   }
 
-  auto singlevector = simulatedDataReturns_[0];
-  auto col = Eigen::VectorXd(singlevector.col(0));
-
-  computeRisk(col, measure, alpha_);
+  computePortfolioRiskMeasures(simulatedDataReturns_, weightsVector_, alpha_, RiskMeasure::VaR);
 
   return simulatedDataReturns_;
 }
