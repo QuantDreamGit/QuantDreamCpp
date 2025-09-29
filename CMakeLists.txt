@@ -59,8 +59,9 @@ packageProject(
         COMPATIBILITY SameMajorVersion
         DEPENDENCIES "fmt 10.2.1"
 )
-
 find_package(CURL REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+target_link_libraries(QuantDreamCpp PRIVATE Eigen3::Eigen)
 
 # ---- AlphaVantage standalone executable ----
 add_executable(AlphaVantageGetData standalone/source/alphaVantageGetData.cpp)
@@ -70,3 +71,7 @@ target_link_libraries(AlphaVantageGetData PRIVATE QuantDreamCpp CURL::libcurl)
 add_executable(loadYFCSV standalone/source/loadYFCSV.cpp)
 target_link_libraries(loadYFCSV PRIVATE QuantDreamCpp CURL::libcurl)
 
+# ---- AlphaVantage standalone executable ----
+add_executable(MonteCarloSimulation standalone/source/MonteCarloSimulation.cpp)
+target_link_libraries(MonteCarloSimulation PRIVATE QuantDreamCpp CURL::libcurl)
+target_link_libraries(MonteCarloSimulation PRIVATE Eigen3::Eigen)
