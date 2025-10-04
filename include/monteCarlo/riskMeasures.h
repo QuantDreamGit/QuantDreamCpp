@@ -16,10 +16,11 @@ enum class RiskMeasure {
 
 // Function to compute the portfolio risk measure (VaR or ES) for each simulation
 // using the simulated returns and the weights of the assets in the portfolio
-Eigen::MatrixXd computePortfolioRiskMeasures(const std::vector<Eigen::MatrixXd> &simulatedReturns,
+std::vector<double> computePortfolioRiskMeasures(const std::vector<Eigen::MatrixXd> &simulatedReturns,
                                              const std::vector<double> &weights,
                                              const size_t &alpha,
-                                             const RiskMeasure &measure);
+                                             const RiskMeasure &measure,
+                                             bool plotLosses = false);
 
 // Function to compute the Value at Risk (VaR)  and Expected Shortfall (ES)
 // at a given confidence level alpha
