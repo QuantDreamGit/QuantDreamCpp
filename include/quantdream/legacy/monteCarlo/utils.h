@@ -4,7 +4,6 @@
 #include <string>
 #include <cmath>
 #include <limits>
-#include <iostream>
 
 void plotPortfolioLosses(const Eigen::MatrixXd& riskMeasureMatrix,
                          const std::string folderName = "MonteCarlo",
