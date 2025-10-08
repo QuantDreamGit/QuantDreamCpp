@@ -5,8 +5,8 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
-#include "monteCarlo/riskMeasures.h"
-#include "monteCarlo/utils.h"
+#include "quantdream/legacy/monteCarlo/riskMeasures.h"
+#include "quantdream/legacy/monteCarlo/utils.h"
 
 // Matrix structure:
 // Cols: Loss_asset_0 | ... | Loss_asset_N-1 | Portfolio_Loss

@@ -18,9 +18,9 @@
 
 #include <ortools/linear_solver/linear_solver.h>
 
-#include "csvReader/CsvReader.h"
-#include "monteCarlo/engine.h"
-#include "monteCarlo/riskMeasures.h"
+#include "quantdream/legacy/csvReader/CsvReader.h"
+#include "quantdream/legacy/monteCarlo/engine.h"
+#include "quantdream/legacy/monteCarlo/riskMeasures.h"
 
 // YFinance Data Structure
 using YFData = std::map<std::string,                      // Date

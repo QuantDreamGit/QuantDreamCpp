@@ -2,7 +2,7 @@
 // Created by user on 9/30/25.
 //
 
-#include "monteCarlo/ERCOptimizer.h"
+#include "quantdream/legacy/monteCarlo/ERCOptimizer.h"
 
 #include "ortools/math_opt/cpp/math_opt.h"
 #include "ortools/linear_solver/linear_solver.h"

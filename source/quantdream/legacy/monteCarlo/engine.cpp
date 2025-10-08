@@ -2,9 +2,9 @@
 // Created by user on 9/24/25.
 //
 
-#include "monteCarlo/engine.h"
-#include "monteCarlo/riskMeasures.h"
-#include "monteCarlo/ERCOptimizer.h"
+#include "quantdream/legacy/monteCarlo/engine.h"
+#include "quantdream/legacy/monteCarlo/riskMeasures.h"
+#include "quantdream/legacy/monteCarlo/ERCOptimizer.h"
 
 #include <eigen3/Eigen/Dense>
 #include <map>
