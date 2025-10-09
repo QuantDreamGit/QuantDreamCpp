@@ -47,7 +47,6 @@ public:
   // theta = tilt severity (0.0 = uniform, >0 favors losses)
   Eigen::MatrixXd runSingleSimulationStationary(size_t blockSizeMean, double theta = 0.0);
 
-  // Run multiple simulations and store results
   void runSimulation(SimulationMethod method,
                      double param1 = 0.0,
                      double param2 = 0.0);
@@ -76,6 +75,11 @@ public:
   // --- RNG control ---
   void setSeed(const size_t &seed) { rng_.seed(seed); }
 
+  // In MonteCarloEngine.h or .cpp
+  inline void updateData(const YFData& newData) {
+    this->marketData_ = newData;
+  }
+
 private:
   // Define parameters
   std::mt19937 rng_;
@@ -95,7 +99,7 @@ private:
   std::vector<double> portfolioReturns_;
   std::vector<double> riskContributions_;
 
-  // Private methods
+  // --- Private methods ---
   void setInitialWeights_();
   void computeSelectedDataReturns_();
 };
