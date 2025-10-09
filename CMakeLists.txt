@@ -37,6 +37,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         CXX_EXTENSIONS NO
 )
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 target_link_libraries(${PROJECT_NAME}
         PRIVATE fmt::fmt
         PUBLIC Eigen3::Eigen
@@ -48,11 +52,23 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
 )
 
-add_executable(AlphaVantageGetData standalone/source/alphaVantageGetData.cpp)
+add_executable(AlphaVantageGetData standalone/source/legacy/alphaVantageGetData.cpp)
 target_link_libraries(AlphaVantageGetData PRIVATE QuantDreamCpp CURL::libcurl)
 
-add_executable(loadYFCSV standalone/source/loadYFCSV.cpp)
+add_executable(loadYFCSV standalone/source/legacy/loadYFCSV.cpp)
 target_link_libraries(loadYFCSV PRIVATE QuantDreamCpp CURL::libcurl)
 
-add_executable(MonteCarloSimulation standalone/source/MonteCarloSimulation.cpp)
+add_executable(MonteCarloSimulation standalone/source/legacy/MonteCarloSimulation.cpp)
 target_link_libraries(MonteCarloSimulation PRIVATE QuantDreamCpp CURL::libcurl)
+
+add_executable(RollingMonteCarloSimulation standalone/source/legacy/RollingMonteCarloSimulation.cpp)
+target_link_libraries(RollingMonteCarloSimulation PRIVATE QuantDreamCpp CURL::libcurl)
+
+add_executable(MonteCarloComparison standalone/source/legacy/comparison.cpp)
+target_link_libraries(MonteCarloComparison PRIVATE QuantDreamCpp CURL::libcurl)
+
+add_executable(trimmed_mean_test test/source/statistics/robust/center/trimmed_mean.cpp)
+target_link_libraries(trimmed_mean_test PRIVATE QuantDreamCpp CURL::libcurl)
+
+add_executable(winsorized_mean_test test/source/statistics/robust/center/winsorized_mean.cpp)
+target_link_libraries(winsorized_mean_test PRIVATE QuantDreamCpp CURL::libcurl)
