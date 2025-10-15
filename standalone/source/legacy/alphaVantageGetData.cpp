@@ -1,10 +1,10 @@
 #include <iostream>
-#include "alpha_vantage/AlphaVantage.h"
-#include "alpha_vantage/CurlHttpClient.h"
+#include "quantdream/legacy/alpha_vantage/AlphaVantage.h"
+#include "quantdream/legacy/alpha_vantage/CurlHttpClient.h"
 #include <memory>
 #include <string>
 
-#include "alpha_vantage/Parser.h"
+#include "quantdream/legacy/alpha_vantage/Parser.h"
 
 int main() {
     const std::string API = "Z66IST5JZ5NNWHJ2";// "WFE9OEXRRTBBUP7P";

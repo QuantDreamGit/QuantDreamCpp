@@ -5,7 +5,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 #include <string>
-#include "alpha_vantage/TimeSeries.h"
+#include "quantdream/legacy/alpha_vantage/TimeSeries.h"
 
 namespace AlphaVantage {
     class Parser {

@@ -2,8 +2,8 @@
 // Created by Giuseppe Priolo on 21/09/25.
 //
 
-#include "alpha_vantage/AlphaVantage.h"
-#include "alpha_vantage/TimeSeries.h"
+#include "quantdream/legacy/alpha_vantage/AlphaVantage.h"
+#include "quantdream/legacy/alpha_vantage/TimeSeries.h"
 
 #include <stdexcept>
 #include <string>

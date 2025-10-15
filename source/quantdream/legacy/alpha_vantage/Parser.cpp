@@ -2,7 +2,7 @@
 // Created by Giuseppe Priolo on 21/09/25.
 //
 
-#include "alpha_vantage/Parser.h"
+#include "quantdream/legacy/alpha_vantage/Parser.h"
 #include "external/rapidjson/document.h"
 #include "external/rapidjson/error/en.h"
 

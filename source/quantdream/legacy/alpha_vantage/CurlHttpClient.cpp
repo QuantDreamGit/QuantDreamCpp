@@ -2,7 +2,7 @@
 // Created by Giuseppe Priolo on 21/09/25.
 //
 
-#include "alpha_vantage/CurlHttpClient.h"
+#include "quantdream/legacy/alpha_vantage/CurlHttpClient.h"
 
 #include <curl/curl.h>
 #include <stdexcept>
