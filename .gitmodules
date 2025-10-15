@@ -1,6 +1,6 @@
 [submodule "external/IBWrapper"]
 	path = external/IBWrapper
-	url = https://github.com/QuantDreamGit/InteractiveBrokersWrapperCpp.git
+	url = https://github.com/QuantDreamGit/InteractiveBrokersWrapperCpp
 [submodule "external/IBapi"]
 	path = external/IBapi
 	url = https://github.com/QuantDreamGit/IBapi
