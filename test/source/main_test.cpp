@@ -2,6 +2,7 @@
 // Created by user on 10/15/25.
 //
 #include "ibwrapper_test/test.h"
+#include "EClient.h"
 
 int main() {
   IBWrapper ib;

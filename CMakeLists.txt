@@ -101,4 +101,7 @@ add_executable(test test/source/main_test.cpp)
 target_link_libraries(test PRIVATE QuantDreamCpp CURL::libcurl)
 target_include_directories(test PRIVATE
         ${PROJECT_SOURCE_DIR}/external/IBWrapper/include
+        ${PROJECT_SOURCE_DIR}/external/IBapi/source/cppclient
+        ${PROJECT_SOURCE_DIR}/external/IBapi/source/cppclient/client
+        ${PROJECT_SOURCE_DIR}/external/IBapi/source/proto
 )
