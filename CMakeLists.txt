@@ -11,15 +11,21 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(FATAL_ERROR "In-source builds not allowed.")
 endif()
 
-# ---- Dependency Management ----
+# ---- Dependency Management (CPM) ----
 include(cmake/CPM.cmake)
 
-CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
+# PackageProject is used for versioned install/export support (required by CPM)
+CPMAddPackage(
+        NAME PackageProject
+        GITHUB_REPOSITORY TheLartians/PackageProject.cmake
+        GIT_TAG v1.8.0
+)
 
+# ---- fmt (stable pinned version) ----
 CPMAddPackage(
         NAME fmt
-        GIT_TAG 10.2.1
         GITHUB_REPOSITORY fmtlib/fmt
+        GIT_TAG 10.2.1
         OPTIONS "FMT_INSTALL YES"
 )
 
@@ -51,9 +57,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO
 )
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 # ---- Linking ----
 target_link_libraries(${PROJECT_NAME}
