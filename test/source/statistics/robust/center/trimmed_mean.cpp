@@ -21,7 +21,7 @@ int main() {
   // -------------------------------------------------------
   std::vector<int> std_vec({12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0});
 
-  auto result = trimmed_mean<double>(std_vec, trim_fraction);
+  auto result = qd::statistics::robust::center::trimmed_mean<double>(std_vec, trim_fraction);
 
   std::cout << "std::vector \t| Trimmed mean of data is: " << result << std::endl;
 
@@ -30,7 +30,7 @@ int main() {
   // -------------------------------------------------------
   Eigen::VectorXd eigen_vec(13);
   eigen_vec << 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0;
-  result = trimmed_mean<double>(eigen_vec, trim_fraction);
+  result = qd::statistics::robust::center::trimmed_mean<double>(eigen_vec, trim_fraction);
 
   std::cout << "Eigen::VectorXd | Trimmed mean of data is: " << result << std::endl;
 }

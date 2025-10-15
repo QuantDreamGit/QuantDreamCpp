@@ -19,7 +19,7 @@ int main() {
   // -------------------------------------------------------
   std::vector<int> std_vec({12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0});
 
-  auto result = winsorized_mean<double>(std_vec, trim_fraction);
+  auto result = qd::statistics::robust::center::winsorized_mean<double>(std_vec, trim_fraction);
 
   std::cout << "std::vector \t| Winsorized mean of data is: " << result << std::endl;
 
@@ -28,7 +28,7 @@ int main() {
   // -------------------------------------------------------
   Eigen::VectorXd eigen_vec(13);
   eigen_vec << 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0;
-  result = winsorized_mean<double>(eigen_vec, trim_fraction);
+  result = qd::statistics::robust::center::winsorized_mean<double>(eigen_vec, trim_fraction);
 
   std::cout << "Eigen::VectorXd | Winsorized mean of data is: " << result << std::endl;
 }
