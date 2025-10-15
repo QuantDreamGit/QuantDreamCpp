@@ -67,6 +67,7 @@ target_link_libraries(${PROJECT_NAME}
         PRIVATE fmt::fmt
         PUBLIC Eigen3::Eigen
         PRIVATE IBWrapper
+        PUBLIC ibapi
 )
 
 if(HAS_ORTOOLS)
