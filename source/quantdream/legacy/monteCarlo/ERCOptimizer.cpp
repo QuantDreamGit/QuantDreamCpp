@@ -4,17 +4,12 @@
 
 #include "quantdream/legacy/monteCarlo/ERCOptimizer.h"
 
-#include "ortools/math_opt/cpp/math_opt.h"
-#include "ortools/linear_solver/linear_solver.h"
 #include <memory>
-#include "ortools/linear_solver/linear_solver.h"
 #include <vector>
 #include <iostream>
 #include <numeric>
 #include <stdexcept>
 
-namespace mo = operations_research::math_opt;
-using namespace operations_research;
 ERCOptimizer::ERCOptimizer(MonteCarloEngine &mc,
                            const size_t nAssets,
                            const size_t nMaxIterations,
