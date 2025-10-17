@@ -79,6 +79,35 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/external/IBapi/source/proto>
         $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
 )
+# ========================
+# Abseil (required by modern Protobuf)
+# ========================
+find_package(absl QUIET)
+if(absl_FOUND)
+  message(STATUS "Found Abseil: ${absl_DIR}")
+  # Compact import: glob all Abseil libs (covers version-specific splits)
+  file(GLOB ABSL_LIBS /opt/homebrew/lib/libabsl_*.dylib)
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${ABSL_LIBS})
+else()
+  message(WARNING "Abseil not found — protobuf linkage may fail on recent versions.")
+endif()
+
+# ========================
+# Intel Decimal Math Library (macOS only)
+# ========================
+if (APPLE)
+  set(BID_PATH "$ENV{HOME}/IntelRDFPMathLib20U2/LIBRARY/libbid.a")
+  if (EXISTS "${BID_PATH}")
+    message(STATUS "Using Intel Decimal Math library at: ${BID_PATH}")
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${BID_PATH}")
+    target_include_directories(${PROJECT_NAME} PRIVATE "$ENV{HOME}/IntelRDFPMathLib20U2/LIBRARY/src")
+  else()
+    message(FATAL_ERROR "libbid.a not found at ${BID_PATH}")
+  endif()
+endif()
+
+# Abseil (used by modern Protobuf)
+find_package(absl REQUIRED)
 
 # --- Link libraries ---
 target_link_libraries(${PROJECT_NAME}
@@ -87,7 +116,7 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC Eigen3::Eigen
         PRIVATE IBWrapper
         PUBLIC ibapi
-        PRIVATE bid
+        # PRIVATE bid
 )
 
 if(HAS_ORTOOLS)
