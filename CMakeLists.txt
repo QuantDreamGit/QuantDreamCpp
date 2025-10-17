@@ -6,22 +6,30 @@ project(
         LANGUAGES CXX
 )
 
-# ---- Include guards ----
+# ========================
+# Build Settings & Guards
+# ========================
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-  message(FATAL_ERROR "In-source builds not allowed.")
+  message(FATAL_ERROR "In-source builds are not allowed. Please build in a separate directory.")
 endif()
 
-# ---- Dependency Management (CPM) ----
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# ========================
+# Dependency Management
+# ========================
 include(cmake/CPM.cmake)
 
-# PackageProject is used for versioned install/export support (required by CPM)
+# PackageProject (for versioned install/export support)
 CPMAddPackage(
         NAME PackageProject
         GITHUB_REPOSITORY TheLartians/PackageProject.cmake
         GIT_TAG v1.8.0
 )
 
-# ---- fmt (stable pinned version) ----
+# fmt
 CPMAddPackage(
         NAME fmt
         GITHUB_REPOSITORY fmtlib/fmt
@@ -29,7 +37,7 @@ CPMAddPackage(
         OPTIONS "FMT_INSTALL YES"
 )
 
-# ---- External Libraries ----
+# External libraries
 find_package(CURL REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
@@ -43,11 +51,15 @@ else()
   set(HAS_ORTOOLS FALSE)
 endif()
 
-# ---- External Submodules ----
+# ========================
+# External Submodules
+# ========================
 add_subdirectory(external/IBapi)
 add_subdirectory(external/IBWrapper)
 
-# ---- Core Library ----
+# ========================
+# Core Library
+# ========================
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp")
 
@@ -58,16 +70,24 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         CXX_EXTENSIONS NO
 )
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# --- Include directories ---
+target_include_directories(${PROJECT_NAME} PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/external/IBWrapper/include>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/external/IBapi/source/cppclient>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/external/IBapi/source/cppclient/client>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/external/IBapi/source/proto>
+        $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
+)
 
-
-# ---- Linking ----
+# --- Link libraries ---
 target_link_libraries(${PROJECT_NAME}
         PRIVATE fmt::fmt
+        PRIVATE CURL::libcurl
         PUBLIC Eigen3::Eigen
         PRIVATE IBWrapper
         PUBLIC ibapi
+        PRIVATE bid
 )
 
 if(HAS_ORTOOLS)
@@ -77,39 +97,27 @@ else()
   target_compile_definitions(${PROJECT_NAME} PUBLIC HAS_ORTOOLS=0)
 endif()
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
-)
+# ========================
+# Helper Function for Executables
+# ========================
+function(add_quant_executable name src)
+  add_executable(${name} ${src})
+  target_link_libraries(${name} PRIVATE QuantDreamCpp)
+endfunction()
 
-# ---- Standalone Executables ----
-add_executable(AlphaVantageGetData standalone/source/legacy/alphaVantageGetData.cpp)
-target_link_libraries(AlphaVantageGetData PRIVATE QuantDreamCpp CURL::libcurl)
+# ========================
+# Executables
+# ========================
 
-add_executable(loadYFCSV standalone/source/legacy/loadYFCSV.cpp)
-target_link_libraries(loadYFCSV PRIVATE QuantDreamCpp CURL::libcurl)
-
-add_executable(MonteCarloSimulation standalone/source/legacy/MonteCarloSimulation.cpp)
-target_link_libraries(MonteCarloSimulation PRIVATE QuantDreamCpp CURL::libcurl)
-
-add_executable(RollingMonteCarloSimulation standalone/source/legacy/RollingMonteCarloSimulation.cpp)
-target_link_libraries(RollingMonteCarloSimulation PRIVATE QuantDreamCpp CURL::libcurl)
-
-add_executable(MonteCarloComparison standalone/source/legacy/comparison.cpp)
-target_link_libraries(MonteCarloComparison PRIVATE QuantDreamCpp CURL::libcurl)
-
-add_executable(trimmed_mean_test test/source/statistics/robust/center/trimmed_mean.cpp)
-target_link_libraries(trimmed_mean_test PRIVATE QuantDreamCpp CURL::libcurl)
-
-add_executable(winsorized_mean_test test/source/statistics/robust/center/winsorized_mean.cpp)
-target_link_libraries(winsorized_mean_test PRIVATE QuantDreamCpp CURL::libcurl)
-
-# ---- Test executable using IBWrapper ----
-add_executable(test test/source/main_test.cpp)
-target_link_libraries(test PRIVATE QuantDreamCpp CURL::libcurl)
-target_include_directories(test PRIVATE
-        ${PROJECT_SOURCE_DIR}/external/IBWrapper/include
-        ${PROJECT_SOURCE_DIR}/external/IBapi/source/cppclient
-        ${PROJECT_SOURCE_DIR}/external/IBapi/source/cppclient/client
-        ${PROJECT_SOURCE_DIR}/external/IBapi/source/proto
-)
+## Gaterhing Data
+add_quant_executable(AlphaVantageGetData standalone/source/legacy/alphaVantageGetData.cpp)
+add_quant_executable(loadYFCSV standalone/source/legacy/loadYFCSV.cpp)
+## Monte Carlo Simulations
+add_quant_executable(MonteCarloSimulation standalone/source/legacy/MonteCarloSimulation.cpp)
+add_quant_executable(RollingMonteCarloSimulation standalone/source/legacy/RollingMonteCarloSimulation.cpp)
+add_quant_executable(MonteCarloComparison standalone/source/legacy/comparison.cpp)
+## IBKR Related
+add_quant_executable(IBKR_get_market_data standalone/source/ibkr/get_market_data.cpp)
+## Testing
+add_quant_executable(trimmed_mean_test test/source/statistics/robust/center/trimmed_mean.cpp)
+add_quant_executable(winsorized_mean_test test/source/statistics/robust/center/winsorized_mean.cpp)
