@@ -116,7 +116,7 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC Eigen3::Eigen
         PRIVATE IBWrapper
         PUBLIC ibapi
-        # PRIVATE bid
+        PRIVATE bid
 )
 
 if(HAS_ORTOOLS)
