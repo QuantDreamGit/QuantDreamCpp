@@ -1,14 +1,11 @@
-#include "../../../external/IBWrapper/include/request/contracts/ContractDetails.h"
-#include "../../../external/IBWrapper/include/request/market_data/MarketDataRequests.h"
+#include "request/contracts/ContractDetails.h"
 #include "Order.h"
 #include "contracts/StockContracts.h"
 #include "helpers/connection.h"
 #include "orders/common_orders.h"
 #include "orders/management/open.h"
 #include "orders/options/simple_order.h"
-#include "request/market_data/get_prices.h"
 #include "request/options/chain.h"
-#include "request/options/greeks.h"
 #include "wrappers/IBWrapperBase.h"
 
 int main() {
