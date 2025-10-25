@@ -80,43 +80,44 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
 )
 # ========================
-# Abseil (required by modern Protobuf)
+# Protobuf & Abseil
 # ========================
-find_package(absl QUIET)
-if(absl_FOUND)
-  message(STATUS "Found Abseil: ${absl_DIR}")
-  # Compact import: glob all Abseil libs (covers version-specific splits)
-  file(GLOB ABSL_LIBS /opt/homebrew/lib/libabsl_*.dylib)
-  target_link_libraries(${PROJECT_NAME} PRIVATE ${ABSL_LIBS})
-else()
-  message(WARNING "Abseil not found — protobuf linkage may fail on recent versions.")
+find_package(Protobuf REQUIRED)
+find_package(absl CONFIG REQUIRED)
+message(STATUS "Using Abseil from: ${absl_DIR}")
+message(STATUS "Using Protobuf from: ${Protobuf_LIBRARY}")
+
+# Link all relevant Abseil components used by Protobuf >= 20240722
+set(ABSL_LIBS
+        absl::base
+        absl::log
+        absl::log_internal_check_op
+        absl::hash
+        absl::strings
+        absl::str_format
+        absl::time
+        absl::cord
+)
+
+# ========================
+# Intel Decimal Math Library (Linux & macOS)
+# ========================
+find_library(BID_LIB bid HINTS /usr/local/lib)
+if (NOT BID_LIB)
+  message(FATAL_ERROR "libbid.a not found in /usr/local/lib")
 endif()
+message(STATUS "Using Intel Decimal Math library: ${BID_LIB}")
 
-# ========================
-# Intel Decimal Math Library (macOS only)
-# ========================
-if (APPLE)
-  set(BID_PATH "$ENV{HOME}/IntelRDFPMathLib20U2/LIBRARY/libbid.a")
-  if (EXISTS "${BID_PATH}")
-    message(STATUS "Using Intel Decimal Math library at: ${BID_PATH}")
-    target_link_libraries(${PROJECT_NAME} PRIVATE "${BID_PATH}")
-    target_include_directories(${PROJECT_NAME} PRIVATE "$ENV{HOME}/IntelRDFPMathLib20U2/LIBRARY/src")
-  else()
-    message(FATAL_ERROR "libbid.a not found at ${BID_PATH}")
-  endif()
-endif()
-
-# Abseil (used by modern Protobuf)
-find_package(absl REQUIRED)
-
-# --- Link libraries ---
+# --- Link everything ---
 target_link_libraries(${PROJECT_NAME}
         PRIVATE fmt::fmt
         PRIVATE CURL::libcurl
         PUBLIC Eigen3::Eigen
-        PRIVATE IBWrapper
         PUBLIC ibapi
-        PRIVATE bid
+        PRIVATE IBWrapper
+        PRIVATE ${BID_LIB}
+        PUBLIC ${ABSL_LIBS}
+        PUBLIC ${Protobuf_LIBRARIES}
 )
 
 if(HAS_ORTOOLS)
