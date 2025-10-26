@@ -16,8 +16,6 @@
 #include <iostream>
 #include <vector>
 
-#include <ortools/linear_solver/linear_solver.h>
-
 #include "quantdream/legacy/csvReader/CsvReader.h"
 #include "quantdream/legacy/monteCarlo/engine.h"
 #include "quantdream/legacy/monteCarlo/riskMeasures.h"

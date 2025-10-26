@@ -11,7 +11,7 @@
 int main() {
   // Logger setup
   Logger::setEnabled(true);
-  Logger::setLevel(Logger::Level::INFO);
+  Logger::setLevel(Logger::Level::TIMER);
 
   // IB Wrapper setup
   IBWrapperBase ib;
