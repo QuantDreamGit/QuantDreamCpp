@@ -148,6 +148,7 @@ add_quant_executable(RollingMonteCarloSimulation standalone/source/legacy/Rollin
 add_quant_executable(MonteCarloComparison standalone/source/legacy/comparison.cpp)
 ## IBKR Related
 add_quant_executable(IBKR_get_market_data standalone/source/ibkr/get_market_data.cpp)
+add_quant_executable(IBKR_monitor standalone/source/ibkr/monitor_account.cpp)
 ## Testing
 add_quant_executable(trimmed_mean_test test/source/statistics/robust/center/trimmed_mean.cpp)
 add_quant_executable(winsorized_mean_test test/source/statistics/robust/center/winsorized_mean.cpp)
