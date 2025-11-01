@@ -1,107 +1,116 @@
+/**
+ * @file get_market_data.cpp
+ * @brief IB API testing utility with toggleable feature sections
+ *
+ * Toggle features via FeatureFlags namespace. Each section is independent.
+ * Connection: IB Gateway/TWS on 127.0.0.1:4002
+ */
+
 #include "contracts/StockContracts.h"
 #include "helpers/connection.h"
 #include "helpers/open_markets.h"
+#include "orders/common_orders.h"
 #include "orders/management/open.h"
 #include "orders/management/pnl.h"
 #include "orders/management/position.h"
 #include "orders/options/condor_order.h"
+#include "orders/options/simple_order.h"
 #include "request/options/chain.h"
 #include "wrappers/IBBaseWrapper.h"
 #include "wrappers/IBStrategyWrapper.h"
 
+// =============================================================================
+// Feature Flags - Enable/disable sections
+// =============================================================================
+namespace FeatureFlags {
+  constexpr bool OPTION_CHAIN = true;       ///< Fetch option chain
+  constexpr bool SIMPLE_ORDER = false;      ///< Place simple option order
+  constexpr bool IRON_CONDOR = true;        ///< Execute iron condor
+  constexpr bool ACCOUNT_SUMMARY = false;   ///< Request account data
+  constexpr bool POSITION_MGT = false;      ///< Query/close positions
+  constexpr bool PNL_MONITOR = false;       ///< Real-time P&L loop
+  constexpr bool CANCEL_ORDERS = false;     ///< Cancel all orders
+}
+
+// =============================================================================
+// Main
+// =============================================================================
 int main() {
-  // Logger setup
+  // Setup
   Logger::setEnabled(true);
   Logger::setLevel(Logger::Level::TIMER);
-
-  // Constants
   const std::string exchange = "SMART";
 
-  // IB Wrapper setup
   IBStrategyWrapper ib;
-  // Connect to IB Gateway or TWS (by default it uses realtime market data)
   IB::Helpers::ensureConnected(ib, "127.0.0.1", 4002, 0);
-
-  // Get the underlying contract
   Contract const underlying = IB::Contracts::makeStock("GOOGL", exchange, "USD");
 
-  // Get chain info
-  const IB::Options::ChainInfo optChain = IB::Request::getOptionChain(ib,
-                                                                   underlying,
-                                                                   IB::ReqId::OPTION_CHAIN_ID,
-                                                                   0.1,
-                                                                   exchange);
-
-  // Create a market order
-  // const Order marketOrder = IB::Orders::MarketBuy(1);
-  // Execute simple option order
-  // IB::Orders::Options::placeSimpleOrder(ib, underlying, optChain, marketOrder, "C");
-
-  // Cancel all orders
-  // IB::Orders::Management::Open::cancelAll(ib);
-
-  /*
-  IB::Orders::Options::placeIronCondor(
-      ib,
-      underlying,
-      optChain,
-      *optChain.expirations.begin(),
-      {},                             // no strikes -> auto-selects middle 4
-      1,
-      true,                             // buy condor
-      0.1,
-      true                              // Confirms auto-strikes usage
-  );
-  */
-
-  // ib.client->reqAccountSummary(
-  //   9001,           // reqId (any unique integer)
-  //   "All",          // group ("All" = all accounts)
-  //   "NetLiquidation,TotalCashValue,BuyingPower,AvailableFunds"
-  // );
-
-  // auto positions = IB::Orders::Management::getOpenPositions(ib);
-  // IB::Orders::Management::closeAllPositions(ib);
-  // IB::Orders::Management::showCurrentPnL(ib);
-
-  IB::Orders::Management::closeAllPositions(ib);
-  /*
-  while (true) {
-    try {
-      IB::Orders::Management::showCurrentPnL(ib);
-    } catch (const std::exception& e) {
-      LOG_ERROR("[PnLLoop] Exception: ", e.what());
-    }
-
-    // Sleep for 1 second between refreshes
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+  // Section 1: Option Chain
+  IB::Options::ChainInfo optChain;
+  if (FeatureFlags::OPTION_CHAIN) {
+    LOG_INFO("=== Fetching Option Chain ===");
+    optChain = IB::Request::getOptionChain(ib, underlying, IB::ReqId::OPTION_CHAIN_ID, 0.1, exchange);
+    LOG_INFO("Found ", optChain.expirations.size(), " expirations\n");
   }
-  IB::Orders::Management::closeAllPositions(ib);
-  */
-  // ib.disconnect();
-  // Cancel all orders after waiting for one second
-  // std::this_thread::sleep_for(std::chrono::seconds(1));
-  // IB::Orders::Management::Open::cancelAll(ib);
 
+  // Section 2: Simple Order
+  if (FeatureFlags::SIMPLE_ORDER) {
+    LOG_INFO("=== Placing Simple Order ===");
+    const Order marketOrder = IB::Orders::MarketBuy(1);
+    IB::Orders::Options::placeSimpleOrder(ib, underlying, optChain, marketOrder, "C");
+    LOG_INFO("Order submitted\n");
+  }
 
+  // Section 3: Iron Condor
+  if (FeatureFlags::IRON_CONDOR) {
+    LOG_INFO("=== Executing Iron Condor ===");
+    IB::Orders::Options::placeIronCondor(ib, underlying, optChain, *optChain.expirations.begin(),
+                                         {}, 1, true, 0.1, true);
+    LOG_INFO("Condor submitted\n");
+  }
 
-  // Execute a condor strategy
-  // IB::Orders::Options::placeIronCondor(ib, underlying, optChain, *optChain.expirations.begin(), {125.0, 130.0, 140.0, 145.0}, 1, true);
+  // Section 4: Account Summary
+  if (FeatureFlags::ACCOUNT_SUMMARY) {
+    LOG_INFO("=== Requesting Account Summary ===");
+    ib.client->reqAccountSummary(9001, "All", "NetLiquidation,TotalCashValue,BuyingPower,AvailableFunds");
+    LOG_INFO("Request sent\n");
+  }
 
-  // Check if an order is currently open
-  // Since it's not possible to be sure when open orders are finished a get function is required to
-  // fetch them from Wrapper buffer.
-  // Furthermore, when requesting order the buffer is always updated
-  // IB::Orders::Management::Open::requestClientOpenOrders(ib);
-  // auto openOrders = ib.getOpenOrders();
+  // Section 5: Position Management
+  if (FeatureFlags::POSITION_MGT) {
+    LOG_INFO("=== Managing Positions ===");
+    auto positions = IB::Orders::Management::getOpenPositions(ib);
+    LOG_INFO("Found ", positions.size(), " positions");
+    IB::Orders::Management::closeAllPositions(ib);
+    LOG_INFO("Close orders submitted\n");
+  }
 
+  // Section 6: P&L Monitoring (blocks until Ctrl+C)
+  if (FeatureFlags::PNL_MONITOR) {
+    LOG_INFO("=== Starting P&L Monitor (5s refresh) ===");
+    while (true) {
+      try {
+        IB::Orders::Management::showCurrentPnL(ib);
+      } catch (const std::exception& e) {
+        LOG_ERROR("P&L error: ", e.what());
+      }
+      std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
+  }
 
+  // Section 7: Cancel All Orders
+  if (FeatureFlags::CANCEL_ORDERS) {
+    LOG_INFO("=== Cancelling All Orders ===");
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    IB::Orders::Management::Open::cancelAll(ib);
+    LOG_INFO("Cancellation sent\n");
+  }
 
-  // auto callGreeks = IB::Requests::getGreeksTable(ib, underlying, optChain, "C");
-
-  std::cout << "Press Enter to exit..." << std::endl;
+  // Cleanup
+  std::cout << "\nPress Enter to exit..." << std::endl;
   std::cin.get();
-
   ib.disconnect();
+  LOG_INFO("Disconnected");
+
   return 0;
 }
