@@ -25,9 +25,9 @@
 namespace FeatureFlags {
   constexpr bool OPTION_CHAIN = true;       ///< Fetch option chain
   constexpr bool SIMPLE_ORDER = false;      ///< Place simple option order
-  constexpr bool IRON_CONDOR = true;        ///< Execute iron condor
+  constexpr bool IRON_CONDOR = false;        ///< Execute iron condor
   constexpr bool ACCOUNT_SUMMARY = false;   ///< Request account data
-  constexpr bool POSITION_MGT = false;      ///< Query/close positions
+  constexpr bool POSITION_MGT = true;      ///< Query/close positions
   constexpr bool PNL_MONITOR = false;       ///< Real-time P&L loop
   constexpr bool CANCEL_ORDERS = false;     ///< Cancel all orders
 }
