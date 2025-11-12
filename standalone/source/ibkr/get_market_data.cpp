@@ -23,7 +23,7 @@
 // Feature Flags - Enable/disable sections
 // =============================================================================
 namespace FeatureFlags {
-  constexpr bool OPTION_CHAIN = true;       ///< Fetch option chain
+  constexpr bool OPTION_CHAIN = false;       ///< Fetch option chain
   constexpr bool SIMPLE_ORDER = false;      ///< Place simple option order
   constexpr bool IRON_CONDOR = false;        ///< Execute iron condor
   constexpr bool ACCOUNT_SUMMARY = false;   ///< Request account data
